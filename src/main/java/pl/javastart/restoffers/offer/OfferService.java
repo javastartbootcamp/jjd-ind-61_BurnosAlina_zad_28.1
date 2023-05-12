@@ -1,5 +1,7 @@
 package pl.javastart.restoffers.offer;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pl.javastart.restoffers.category.Category;
 import pl.javastart.restoffers.category.CategoryRepository;
@@ -52,22 +54,26 @@ public class OfferService {
         Category category = categoryRepository.findByName(dto.getCategory());
         offer.setCategory(category);
         offerRepository.save(offer);
-        dto.setId(offer.getId());
+        OfferDto offerDto = toDto(offer);
+        return offerDto;
+    }
+
+    public Optional<OfferDto> findById(Long id) {
+        return offerRepository.findById(id).map(this::toDto);
+    }
+
+    private OfferDto toDto(Offer offer) {
+        OfferDto dto = new OfferDto(offer.getId(), offer.getTitle(), offer.getDescription(),
+                offer.getImgUrl(), offer.getPrice(), offer.getCategory().getName());
         return dto;
     }
 
-    public OfferDto findById(Long id) {
-        Optional<Offer> offerOptional = offerRepository.findById(id);
-        if (offerOptional.isPresent()) {
-            Offer offer = offerOptional.get();
-            return new OfferDto(id, offer.getTitle(), offer.getDescription(),
-                    offer.getImgUrl(), offer.getPrice(), offer.getCategory().getName());
-        } else {
-            throw new IllegalArgumentException("Offer with id=" + id + " does not exist");
+    public ResponseEntity<Void> deleteById(Long id) {
+        try {
+            offerRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.notFound().build();
         }
-    }
-
-    public void deleteById(Long id) {
-        offerRepository.deleteById(id);
     }
 }

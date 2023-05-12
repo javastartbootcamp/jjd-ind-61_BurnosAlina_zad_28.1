@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/api/offers")
 @RestController
@@ -16,18 +17,18 @@ public class OfferRestController {
     }
 
     @GetMapping("")
-    List<OfferDto> findOffers(@RequestParam(required = false) String title){
+    List<OfferDto> findOffers(@RequestParam(required = false) String title) {
         List<OfferDto> offers;
-        if(title != null){
+        if (title != null) {
             offers = offerService.findOffersContainingText(title);
         } else {
             offers = offerService.findAll();
         }
         return offers;
-        }
+    }
 
     @GetMapping("/count")
-    long getNumberOfOffers (){
+    long getNumberOfOffers() {
         return offerService.countOffers();
     }
 
@@ -38,12 +39,15 @@ public class OfferRestController {
     }
 
     @GetMapping("/{id}")
-    public OfferDto findById (@PathVariable Long id){
-        return offerService.findById(id);
+    public ResponseEntity<OfferDto> findById(@PathVariable Long id) {
+        Optional<OfferDto> offerOptional = offerService.findById(id);
+        return offerOptional
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id){
+    public void deleteById(@PathVariable Long id) {
         offerService.deleteById(id);
     }
 }

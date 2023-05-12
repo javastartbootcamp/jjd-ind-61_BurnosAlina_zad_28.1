@@ -2,23 +2,13 @@ package pl.javastart.restoffers.category;
 
 public class CategoryDto {
 
-    private Long id;
     private String name;
     private String description;
     private int offers;
 
-    public CategoryDto(Long id, String name, String description) {
-        this.id = id;
+    public CategoryDto(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

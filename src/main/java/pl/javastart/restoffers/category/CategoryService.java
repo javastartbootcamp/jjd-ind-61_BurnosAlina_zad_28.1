@@ -18,7 +18,7 @@ public class CategoryService {
         List<Category> categories = categoryRepository.findAll();
         List<CategoryDto> categoriesDto = new ArrayList<>();
         for (Category category : categories) {
-            CategoryDto categoryDto = new CategoryDto(category.getId(), category.getName(), category.getDescription());
+            CategoryDto categoryDto = new CategoryDto(category.getName(), category.getDescription());
             categoryDto.setOffers(category.getOffers().size());
             categoriesDto.add(categoryDto);
         }
@@ -39,7 +39,6 @@ public class CategoryService {
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
         categoryRepository.save(category);
-        dto.setId(category.getId());
         dto.setOffers(0);
         return dto;
     }
